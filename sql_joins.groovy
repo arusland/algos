@@ -12,6 +12,10 @@ ResultRow[] result = execInnerJoin(books, authors)
 
 printRows(result)
 
+/**
+ * select b.id, b.name, a.name from books b 
+ * inner join authors a on b.authorId = a.id 
+ **/
 ResultRow[] execInnerJoin(BooksRow[] books, AuthorRow[] authors){
 	ResultRow[] result = [];
 
