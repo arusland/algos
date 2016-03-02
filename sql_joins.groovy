@@ -16,13 +16,17 @@ printLine()
 result = execLeftInnerJoin(books, authors)
 printRows(result)
 
+printLine()
+result = execRightInnerJoin(books, authors)
+printRows(result)
+
 
 /**
  * select b.id, b.name, a.name from books b 
  * inner join authors a on b.authorId = a.id 
  **/
-ResultRow[] execInnerJoin(BooksRow[] books, AuthorRow[] authors){
-	ResultRow[] result = [];
+def execInnerJoin(BooksRow[] books, AuthorRow[] authors){
+	def result = []
 
 	for(def book in books) {
 		for(def author in authors) {
@@ -39,8 +43,8 @@ ResultRow[] execInnerJoin(BooksRow[] books, AuthorRow[] authors){
  * select b.id, b.name, a.name from books b 
  * left join authors a on b.authorId = a.id 
  **/
-ResultRow[] execLeftInnerJoin(BooksRow[] books, AuthorRow[] authors){
-	ResultRow[] result = [];
+def execLeftInnerJoin(BooksRow[] books, AuthorRow[] authors){
+	def result = []
 
 	for(def book in books) {
 		for(def author in authors) {
@@ -54,6 +58,30 @@ ResultRow[] execLeftInnerJoin(BooksRow[] books, AuthorRow[] authors){
 		if (result.every { it.bookId != book.id}){
 			result += new ResultRow(book.id, book.name, null)
 		}		
+	}
+
+	result
+}
+
+/**
+ * select b.id, b.name, a.name from books b 
+ * right join authors a on b.authorId = a.id 
+ **/
+def execRightInnerJoin(BooksRow[] books, AuthorRow[] authors){
+	def result = []
+	def usedAuthors = []
+
+	for(def book in books) {
+		for(def author in authors) {
+			if (book.authorId == author.id) {
+				result += new ResultRow(book.id, book.name, author.name)
+				usedAuthors.add(author.id)
+			}
+		}		
+	}
+
+	for(def author in authors.findAll { !usedAuthors.contains(it.id) }) {
+		result += new ResultRow(null, null, author.name)
 	}
 
 	result
@@ -74,7 +102,7 @@ class AuthorRow {
 
 @Canonical
 class ResultRow {
-	int bookId;
+	Integer bookId;
 	String book;
 	String author
 }
