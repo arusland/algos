@@ -1,12 +1,12 @@
 import groovy.transform.Canonical;
 
 
-AuthorRow[] authors = [[1, "Charles Darwin"], 
-					   [2, "George Orwell"],
-					   [3, "Richard Dawkins"],];
+AuthorRow[] authors = [[1, "Charles Darwin"],
+					   [2, "Richard Dawkins"],
+					   [3, "George Orwell"]];
 BooksRow[] books = [[10, "On the Origin of Species", 1],
-					[11, "Nineteen Eighty-Four", 2],
-					[12, "Foundation", 4]];
+					[11, "Foundation", 4],
+					[12, "Nineteen Eighty-Four", 3]];
 
 printLine()
 ResultRow[] result = execInnerJoin(books, authors)
@@ -51,18 +51,19 @@ def execLeftOuterJoin(BooksRow[] books, AuthorRow[] authors){
 	def result = []
 
 	for(def book in books) {
+		boolean found = false;
+
 		for(def author in authors) {
 			if (book.authorId == author.id) {
 				result += new ResultRow(book.id, book.name, author.name)
+				found = true;
 			}
-		}		
-	}
+		}
 
-	for(def book in books) {
-		if (result.every { it.bookId != book.id}){
+		if (!found){
 			result += new ResultRow(book.id, book.name, null)
-		}		
-	}
+		}
+	}	
 
 	result
 }
