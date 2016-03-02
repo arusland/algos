@@ -13,11 +13,15 @@ ResultRow[] result = execInnerJoin(books, authors)
 printRows(result)
 
 printLine()
-result = execLeftInnerJoin(books, authors)
+result = execLeftOuterJoin(books, authors)
 printRows(result)
 
 printLine()
-result = execRightInnerJoin(books, authors)
+result = execRightOuterJoin(books, authors)
+printRows(result)
+
+printLine()
+result = execFullOuterJoin(books, authors)
 printRows(result)
 
 
@@ -43,7 +47,7 @@ def execInnerJoin(BooksRow[] books, AuthorRow[] authors){
  * select b.id, b.name, a.name from books b 
  * left join authors a on b.authorId = a.id 
  **/
-def execLeftInnerJoin(BooksRow[] books, AuthorRow[] authors){
+def execLeftOuterJoin(BooksRow[] books, AuthorRow[] authors){
 	def result = []
 
 	for(def book in books) {
@@ -67,7 +71,7 @@ def execLeftInnerJoin(BooksRow[] books, AuthorRow[] authors){
  * select b.id, b.name, a.name from books b 
  * right join authors a on b.authorId = a.id 
  **/
-def execRightInnerJoin(BooksRow[] books, AuthorRow[] authors){
+def execRightOuterJoin(BooksRow[] books, AuthorRow[] authors){
 	def result = []
 	def usedAuthors = []
 
@@ -77,6 +81,36 @@ def execRightInnerJoin(BooksRow[] books, AuthorRow[] authors){
 				result += new ResultRow(book.id, book.name, author.name)
 				usedAuthors.add(author.id)
 			}
+		}		
+	}
+
+	for(def author in authors.findAll { !usedAuthors.contains(it.id) }) {
+		result += new ResultRow(null, null, author.name)
+	}
+
+	result
+}
+
+/**
+ * select b.id, b.name, a.name from books b 
+ * full join authors a on b.authorId = a.id 
+ **/
+def execFullOuterJoin(BooksRow[] books, AuthorRow[] authors){
+	def result = []
+	def usedAuthors = []
+
+	for(def book in books) {
+		for(def author in authors) {
+			if (book.authorId == author.id) {
+				result += new ResultRow(book.id, book.name, author.name)
+				usedAuthors.add(author.id)
+			}
+		}		
+	}
+
+	for(def book in books) {
+		if (result.every { it.bookId != book.id}){
+			result += new ResultRow(book.id, book.name, null)
 		}		
 	}
 
