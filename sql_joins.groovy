@@ -8,9 +8,14 @@ BooksRow[] books = [[10, "On the Origin of Species", 1],
 					[11, "Nineteen Eighty-Four", 2],
 					[12, "Foundation", 4]];
 
+printLine()
 ResultRow[] result = execInnerJoin(books, authors)
-
 printRows(result)
+
+printLine()
+result = execLeftInnerJoin(books, authors)
+printRows(result)
+
 
 /**
  * select b.id, b.name, a.name from books b 
@@ -24,6 +29,30 @@ ResultRow[] execInnerJoin(BooksRow[] books, AuthorRow[] authors){
 			if (book.authorId == author.id) {
 				result += new ResultRow(book.id, book.name, author.name)
 			}
+		}		
+	}
+
+	result
+}
+
+/**
+ * select b.id, b.name, a.name from books b 
+ * left join authors a on b.authorId = a.id 
+ **/
+ResultRow[] execLeftInnerJoin(BooksRow[] books, AuthorRow[] authors){
+	ResultRow[] result = [];
+
+	for(def book in books) {
+		for(def author in authors) {
+			if (book.authorId == author.id) {
+				result += new ResultRow(book.id, book.name, author.name)
+			}
+		}		
+	}
+
+	for(def book in books) {
+		if (result.every { it.bookId != book.id}){
+			result += new ResultRow(book.id, book.name, null)
 		}		
 	}
 
@@ -55,4 +84,9 @@ void printRows(ResultRow[] rows) {
 	for(def row in rows) {
 		println "$row.bookId\t$row.book\t$row.author"
 	}
+}
+
+
+void printLine() {
+	println("-" * 40)
 }
