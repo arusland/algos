@@ -1,3 +1,7 @@
+/**
+  * Sql join algoritms
+  *
+  **/
 import groovy.transform.Canonical;
 
 
@@ -22,6 +26,10 @@ printRows(result)
 
 printLine()
 result = execFullOuterJoin(books, authors)
+printRows(result)
+
+printLine()
+result = execCrossJoin(books, authors)
 printRows(result)
 
 
@@ -117,6 +125,22 @@ def execFullOuterJoin(BooksRow[] books, AuthorRow[] authors){
 
 	for(def author in authors.findAll { !usedAuthors.contains(it.id) }) {
 		result += new ResultRow(null, null, author.name)
+	}
+
+	result
+}
+
+/**
+ * select b.id, b.name, a.name from books b 
+ * cross join authors a
+ **/
+def execCrossJoin(BooksRow[] books, AuthorRow[] authors){
+	def result = []
+	
+	for(def author in authors) {
+		for(def book in books) {
+			result += new ResultRow(book.id, book.name, author.name)
+		}				
 	}
 
 	result
